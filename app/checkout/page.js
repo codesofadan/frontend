@@ -371,7 +371,7 @@ const CheckoutContent = () => {
                 disabled={submitting}
                 className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-4 px-6 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                {submitting ? 'Opening WhatsApp...' : `Order via WhatsApp - $${total.toFixed(2)}`}
+                {submitting ? 'Opening WhatsApp...' : `Order via WhatsApp - Rs${total.toFixed(2)}`}
               </button>
             </form>
           </div>
@@ -407,9 +407,9 @@ const CheckoutContent = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      Rs{(item.price * item.quantity).toFixed(2)}
                     </p>
-                    <p className="text-sm text-gray-600">${item.price} each</p>
+                    <p className="text-sm text-gray-600">Rs{item.price} each</p>
                   </div>
                 </div>
               ))}
@@ -419,22 +419,22 @@ const CheckoutContent = () => {
             <div className="border-t-2 border-pink-100 pt-4 space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal:</span>
-                <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                <span className="font-semibold">Rs{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping:</span>
                 <span className="font-semibold text-green-600">
-                  {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? 'Free' : `Rs${shipping.toFixed(2)}`}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax:</span>
-                <span className="font-semibold">${tax.toFixed(2)}</span>
+                <span className="font-semibold">Rs{tax.toFixed(2)}</span>
               </div>
               <div className="border-t-2 border-pink-100 pt-2 flex justify-between text-lg font-bold">
                 <span>Total:</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                  ${total.toFixed(2)}
+                  Rs{total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -455,7 +455,7 @@ const CheckoutContent = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span>Free shipping on orders over $100</span>
+                <span>Free shipping on orders over Rs250</span>
               </div>
             </div>
           </div>

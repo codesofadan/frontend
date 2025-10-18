@@ -104,12 +104,10 @@ const CartPage = () => {
                         {item.description}
                       </p>
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                          ${item.price}
-                        </span>
+                      
                         {item.originalPrice && item.originalPrice > item.price && (
                           <span className="text-sm text-gray-400 line-through">
-                            ${item.originalPrice}
+                            Rs{item.originalPrice}
                           </span>
                         )}
                       </div>
@@ -137,7 +135,7 @@ const CartPage = () => {
                     {/* Item Total */}
                     <div className="text-right">
                       <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        Rs{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
 
@@ -167,22 +165,22 @@ const CartPage = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal ({cart.items.reduce((total, item) => total + item.quantity, 0)} items):</span>
-                  <span className="font-semibold">${cart.total.toFixed(2)}</span>
+                  <span className="font-semibold">Rs{cart.total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping:</span>
                   <span className="text-green-600 font-semibold">
-                    {cart.total > 100 ? 'Free' : '$10.00'}
+                    {cart.total > 100 ? 'Free' : 'Rs250.00'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax (8%):</span>
-                  <span className="font-semibold">${(cart.total * 0.08).toFixed(2)}</span>
+                  <span className="font-semibold">Rs{(cart.total * 0.08).toFixed(2)}</span>
                 </div>
                 <div className="border-t-2 border-pink-100 pt-3 flex justify-between text-lg font-bold">
                   <span>Total:</span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                    ${(cart.total + (cart.total > 100 ? 0 : 10) + (cart.total * 0.08)).toFixed(2)}
+                    Rs{(cart.total + (cart.total > 100 ? 0 : 250) + (cart.total * 0.08)).toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -191,7 +189,7 @@ const CartPage = () => {
               {cart.total <= 100 && (
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-2xl p-4 mb-6">
                   <p className="text-sm text-purple-700 font-medium">
-                    Add ${(100 - cart.total).toFixed(2)} more to get free shipping!
+                    Add Rs{(100 - cart.total).toFixed(2)} more to get free shipping!
                   </p>
                   <div className="w-full bg-pink-100 rounded-full h-2 mt-3">
                     <div 

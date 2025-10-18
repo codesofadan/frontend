@@ -216,7 +216,7 @@ export default function AdminPage() {
                                 <div>
                                     <div className="font-semibold text-black">{product.name}</div>
                                     <div className="text-sm text-black">{product.category.charAt(0).toUpperCase() + product.category.slice(1)} | Stock: {product.stock}</div>
-                                    <div className="text-green-600 font-bold">${product.price}</div>
+                                    <div className="text-green-600 font-bold">Rs{product.price}</div>
                                     <div className="text-xs text-black">{product.description?.slice(0, 60)}...</div>
                                 </div>
                                 <div className="flex items-center space-x-2">
