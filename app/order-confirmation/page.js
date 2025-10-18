@@ -50,8 +50,8 @@ const OrderConfirmationContent = () => {
                 <div className="mt-2 text-sm text-green-700">
                   <ul className="list-disc list-inside space-y-1">
                     <li>Check your WhatsApp - the order details should be ready to send</li>
-                    <li>Simply tap "Send" to submit your order to our team</li>
-                    <li>We'll confirm your order and provide tracking information</li>
+                    <li>Simply tap &quot;Send&quot; to submit your order to our team</li>
+                    <li>We&apos;ll confirm your order and provide tracking information</li>
                     <li>Payment will be collected on delivery (Cash on Delivery)</li>
                   </ul>
                 </div>

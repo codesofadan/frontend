@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import AdminLogin from "./login";
 import { productAPI } from "@/lib/api";
 
@@ -177,10 +178,13 @@ export default function AdminPage() {
                                 <div className="grid grid-cols-3 gap-3 mt-3">
                                     {imagePreviews.map((preview, index) => (
                                         <div key={index} className="relative">
-                                            <img 
+                                            <Image 
                                                 src={preview} 
                                                 alt={`Preview ${index + 1}`} 
+                                                width={200}
+                                                height={96}
                                                 className="w-full h-24 object-cover rounded border"
+                                                unoptimized
                                             />
                                             <button
                                                 type="button"
@@ -222,9 +226,11 @@ export default function AdminPage() {
                                         {product.images && product.images.length > 0 ? (
                                             product.images.map((image, index) => (
                                                 <div key={index} className="relative">
-                                                    <img 
+                                                    <Image 
                                                         src={image.url} 
                                                         alt={`${product.name} ${index + 1}`} 
+                                                        width={48}
+                                                        height={48}
                                                         className="w-12 h-12 object-cover rounded border"
                                                     />
                                                     {index === 0 && (
