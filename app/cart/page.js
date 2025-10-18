@@ -25,24 +25,24 @@ const CartPage = () => {
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
         
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-          <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
+          <div className="text-center py-12 sm:py-16 bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl">
             <div className="text-pink-400 mb-4">
-              <svg className="w-24 h-24 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-20 h-20 sm:w-24 sm:h-24 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z"/>
               </svg>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 px-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
                 Your cart is empty
               </span>
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 px-4">
               Looks like you haven&apos;t added any items to your cart yet.
             </p>
             <Link
               href="/"
-              className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block"
+              className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-6 sm:px-8 py-3 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg inline-block text-sm sm:text-base"
             >
               Continue Shopping
             </Link>
@@ -62,13 +62,13 @@ const CartPage = () => {
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
               Shopping Cart
             </span>
           </h1>
-          <p className="text-gray-600 mt-2">{cart.items.length} {cart.items.length === 1 ? 'item' : 'items'} in your cart</p>
+          <p className="text-sm sm:text-base text-gray-600 mt-2">{cart.items.length} {cart.items.length === 1 ? 'item' : 'items'} in your cart</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -77,73 +77,85 @@ const CartPage = () => {
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
               <div className="divide-y divide-pink-100">
                 {cart.items.map((item) => (
-                  <div key={item._id} className="p-6 flex items-center space-x-4 hover:bg-pink-50/30 transition-colors">
-                    {/* Product Image */}
-                    <div className="w-20 h-20 bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl overflow-hidden flex-shrink-0">
-                      {item.images?.[0] ? (
-                        <Image
-                          src={item.images[0].url}
-                          alt={item.name}
-                          width={80}
-                          height={80}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Details */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 mb-2 line-clamp-2">
-                        {item.description}
-                      </p>
-                      <div className="flex items-center space-x-2">
-                      
+                  <div key={item._id} className="p-4 sm:p-6 hover:bg-pink-50/30 transition-colors">
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                      {/* Product Image */}
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl sm:rounded-2xl overflow-hidden flex-shrink-0">
+                        {item.images?.[0] ? (
+                          <Image
+                            src={item.images[0].url}
+                            alt={item.name}
+                            width={80}
+                            height={80}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                            No Image
+                          </div>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Quantity Controls */}
-                    <div className="flex items-center space-x-2">
+                      {/* Product Details - Flexible Layout */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
+                            {item.name}
+                          </h3>
+                          {/* Remove Button - Mobile Top Right */}
+                          <button
+                            onClick={() => removeFromCart(item._id)}
+                            className="text-red-500 hover:text-red-700 p-1 hover:scale-110 transition-transform sm:hidden"
+                            title="Remove item"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      
+                        
+                        {/* Mobile: Quantity and Price in Row */}
+                        <div className="flex items-center justify-between sm:justify-start sm:gap-4">
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
+                              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold text-lg"
+                            >
+                              -
+                            </button>
+                            <span className="font-semibold text-base sm:text-lg w-8 text-center">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold text-lg"
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          {/* Item Total */}
+                          <div className="text-right">
+                            <p className="text-base sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
+                              Rs{(item.price * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Remove Button - Desktop Only */}
                       <button
-                        onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold"
+                        onClick={() => removeFromCart(item._id)}
+                        className="hidden sm:block text-red-500 hover:text-red-700 p-2 hover:scale-110 transition-transform"
+                        title="Remove item"
                       >
-                        -
-                      </button>
-                      <span className="font-semibold text-lg w-4 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold"
-                      >
-                        +
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
-
-                    {/* Item Total */}
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                        Rs{(item.price * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item._id)}
-                      className="text-red-500 hover:text-red-700 p-2 hover:scale-110 transition-transform"
-                      title="Remove item"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
                   </div>
                 ))}
               </div>
@@ -152,27 +164,27 @@ const CartPage = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-6 sticky top-4">
-              <h2 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:sticky lg:top-4">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
                 Order Summary
               </h2>
               
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
+              <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-gray-600">Subtotal ({cart.items.reduce((total, item) => total + item.quantity, 0)} items):</span>
                   <span className="font-semibold">Rs{cart.total.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-gray-600">Shipping:</span>
                   <span className="text-green-600 font-semibold">
                     {cart.total > 100 ? 'Free' : 'Rs250.00'}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-gray-600">Tax (8%):</span>
                   <span className="font-semibold">Rs{(cart.total * 0.08).toFixed(2)}</span>
                 </div>
-                <div className="border-t-2 border-pink-100 pt-3 flex justify-between text-lg font-bold">
+                <div className="border-t-2 border-pink-100 pt-2 sm:pt-3 flex justify-between text-base sm:text-lg font-bold">
                   <span>Total:</span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
                     Rs{(cart.total + (cart.total > 100 ? 0 : 250) + (cart.total * 0.08)).toFixed(2)}
@@ -182,11 +194,11 @@ const CartPage = () => {
 
               {/* Free Shipping Notice */}
               {cart.total <= 100 && (
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-2xl p-4 mb-6">
-                  <p className="text-sm text-purple-700 font-medium">
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6">
+                  <p className="text-xs sm:text-sm text-purple-700 font-medium">
                     Add Rs{(100 - cart.total).toFixed(2)} more to get free shipping!
                   </p>
-                  <div className="w-full bg-pink-100 rounded-full h-2 mt-3">
+                  <div className="w-full bg-pink-100 rounded-full h-2 mt-2 sm:mt-3">
                     <div 
                       className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${Math.min((cart.total / 100) * 100, 100)}%` }}
@@ -198,7 +210,7 @@ const CartPage = () => {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-4 px-4 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-center block mb-4"
+                className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 sm:py-4 px-4 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-center block mb-3 sm:mb-4 text-sm sm:text-base"
               >
                 Proceed to Checkout
               </Link>
@@ -206,14 +218,14 @@ const CartPage = () => {
               {/* Continue Shopping */}
               <Link
                 href="/"
-                className="w-full bg-white border-2 border-gray-900 text-gray-900 py-4 px-4 rounded-full font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300 text-center block"
+                className="w-full bg-white border-2 border-gray-900 text-gray-900 py-3 sm:py-4 px-4 rounded-full font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300 text-center block text-sm sm:text-base"
               >
                 Continue Shopping
               </Link>
 
               {/* Security Features */}
-              <div className="mt-6 pt-6 border-t-2 border-pink-100">
-                <div className="space-y-3 text-sm text-gray-600">
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-pink-100">
+                <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-600">
                   <div className="flex items-center space-x-2 group">
                     <div className="w-7 h-7 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                       <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
