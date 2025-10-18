@@ -105,23 +105,18 @@ const CartPage = () => {
                       </p>
                       <div className="flex items-center space-x-2">
                       
-                        {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-sm text-gray-400 line-through">
-                            Rs{item.originalPrice}
-                          </span>
-                        )}
                       </div>
                     </div>
 
                     {/* Quantity Controls */}
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
                         className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold"
                       >
                         -
                       </button>
-                      <span className="font-semibold text-lg w-8 text-center">
+                      <span className="font-semibold text-lg w-4 text-center">
                         {item.quantity}
                       </span>
                       <button
