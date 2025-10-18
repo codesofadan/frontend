@@ -66,11 +66,11 @@ const ProductCard = ({ product, onQuickView }) => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-              ${product.price}
+              Rs{product.price}
             </span>
             {hasDiscount && (
               <span className="text-sm text-gray-400 line-through">
-                ${product.originalPrice}
+                Rs{product.originalPrice}
               </span>
             )}
           </div>

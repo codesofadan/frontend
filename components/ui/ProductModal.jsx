@@ -136,11 +136,11 @@ const ProductModal = ({ product, isOpen, onClose, onBuyNow }) => {
                 {/* Price */}
                 <div className="flex items-center space-x-3 mb-4">
                   <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                    ${product.price}
+                    Rs{product.price}
                   </span>
                   {hasDiscount && (
                     <span className="text-xl text-gray-400 line-through">
-                      ${product.originalPrice}
+                      Rs{product.originalPrice}
                     </span>
                   )}
                 </div>
@@ -209,7 +209,7 @@ const ProductModal = ({ product, isOpen, onClose, onBuyNow }) => {
                       onClick={handleBuyNow}
                       className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-4 px-6 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
-                      Buy Now - ${(product.price * quantity).toFixed(2)}
+                      Buy Now - Rs{(product.price * quantity).toFixed(2)}
                     </button>
                     <button
                       onClick={handleAddToCart}
