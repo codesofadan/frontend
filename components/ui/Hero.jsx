@@ -116,10 +116,10 @@ const HeroWithNavbar = () => {
           <div className="relative">
             <div className="relative z-10">
               <Image
-                src="/hudahero1.png" // Replace with your makeup product image
+                src="/hudahero2.png" // Replace with your makeup product image
                 alt="Premium Makeup Product"
-                width={600}
-                height={600}
+                width={200}
+                height={200}
                 className="w-full h-auto drop-shadow-2xl"
                 priority
               />
