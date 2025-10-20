@@ -37,7 +37,7 @@ function HomePage() {
           setCategories(['all', ...categoriesResponse.data]);
         } else {
           // Fallback to hardcoded categories
-          setCategories(['all', 'nails', 'brushes', 'hudamoji', 'mix brands']);
+          setCategories(['all', 'nails', 'hudamoji', 'mix brands']);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -125,7 +125,7 @@ function HomePage() {
 
           {/* Products Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
               {[...Array(8)].map((_, index) => (
                 <div key={index} className="relative">
                   <div className="bg-white rounded-3xl overflow-hidden shadow-lg">
@@ -139,7 +139,7 @@ function HomePage() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
               {products.map((product) => (
                 <div
                   key={product._id}

@@ -58,6 +58,52 @@ const HeroWithNavbar = () => {
         </div>
       </nav>
       
+      {/* Delivery Ticker */}
+      <div className="relative z-20 bg-gradient-to-r from-pink-600 to-purple-600 text-white py-2 overflow-hidden">
+        <div className="flex animate-marquee">
+          <div className="flex-shrink-0 flex items-center">
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+          </div>
+          <div className="flex-shrink-0 flex items-center" aria-hidden="true">
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+            <span className="text-sm font-medium px-4">
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+            </span>
+          </div>
+        </div>
+      </div>
+      
       {/* Hero Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-10 lg:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

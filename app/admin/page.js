@@ -18,10 +18,14 @@ export default function AdminPage() {
         stock: "",
         featured: false,
         description: "",
-        images: []
+        images: [],
+        shades: []
     });
     const [imagePreviews, setImagePreviews] = useState([]);
-    const [categories, setCategories] = useState(["nails", "brushes", "hudamoji", "mix brands"]);
+    const [newShadeName, setNewShadeName] = useState("");
+    const [newShadeCode, setNewShadeCode] = useState("#000000");
+    const [categories, setCategories] = useState(["nails", "hudamoji", "mix brands"]);
+    const [editingProduct, setEditingProduct] = useState(null);
 
     useEffect(() => {
         if (loggedIn) fetchProducts();
@@ -44,7 +48,7 @@ export default function AdminPage() {
     function handleInput(e) {
         const { name, value, type, files } = e.target;
         if (type === "file") {
-            const fileList = Array.from(files).slice(0, 3); // Limit to 3 images
+            const fileList = Array.from(files).slice(0, 6); // Limit to 6 images
             setForm(f => ({ ...f, images: fileList }));
             
             // Create image previews
@@ -64,6 +68,21 @@ export default function AdminPage() {
         setImagePreviews(newPreviews);
     }
 
+    function addShade() {
+        if (!newShadeName.trim()) {
+            alert("Please enter a shade name");
+            return;
+        }
+        const newShade = { name: newShadeName.trim(), code: newShadeCode };
+        setForm(f => ({ ...f, shades: [...f.shades, newShade] }));
+        setNewShadeName("");
+        setNewShadeCode("#000000");
+    }
+
+    function removeShade(index) {
+        setForm(f => ({ ...f, shades: f.shades.filter((_, i) => i !== index) }));
+    }
+
     async function handleAddProduct(e) {
         e.preventDefault();
         
@@ -73,8 +92,8 @@ export default function AdminPage() {
             return;
         }
         
-        if (form.images.length > 3) {
-            setError("Maximum 3 images allowed");
+        if (form.images.length > 6) {
+            setError("Maximum 6 images allowed");
             return;
         }
         
@@ -87,6 +106,8 @@ export default function AdminPage() {
                     if (v && v.length > 0) {
                         v.forEach(file => fd.append("images", file));
                     }
+                } else if (k === "shades") {
+                    fd.append("shades", JSON.stringify(v));
                 } else {
                     fd.append(k, v);
                 }
@@ -98,7 +119,7 @@ export default function AdminPage() {
             const data = await res.json();
             if (data.success) {
                 setShowForm(false);
-                setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [] });
+                setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
                 setImagePreviews([]);
                 fetchProducts();
                 alert("Product added!");
@@ -132,17 +153,93 @@ export default function AdminPage() {
         }
     }
 
+    function handleEditProduct(product) {
+        setEditingProduct(product);
+        setForm({
+            name: product.name,
+            price: product.price,
+            originalPrice: product.originalPrice || "",
+            category: product.category,
+            stock: product.stock,
+            featured: product.featured,
+            description: product.description,
+            images: [],
+            shades: product.shades || []
+        });
+        // Set existing image previews
+        setImagePreviews(product.images.map(img => img.url));
+        setShowForm(true);
+    }
+
+    async function handleUpdateProduct(e) {
+        e.preventDefault();
+        
+        if (!editingProduct) return;
+        
+        setLoading(true);
+        setError("");
+        try {
+            const fd = new FormData();
+            Object.entries(form).forEach(([k, v]) => {
+                if (k === "images") {
+                    if (v && v.length > 0) {
+                        v.forEach(file => fd.append("images", file));
+                        fd.append("replaceImages", "true");
+                    }
+                } else if (k === "shades") {
+                    fd.append("shades", JSON.stringify(v));
+                } else {
+                    fd.append(k, v);
+                }
+            });
+            
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products/${editingProduct._id}`, {
+                method: "PUT",
+                body: fd
+            });
+            const data = await res.json();
+            if (data.success) {
+                setShowForm(false);
+                setEditingProduct(null);
+                setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
+                setImagePreviews([]);
+                fetchProducts();
+                alert("Product updated!");
+            } else {
+                setError(data.error || "Failed to update product");
+            }
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function handleCancelEdit() {
+        setEditingProduct(null);
+        setShowForm(false);
+        setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
+        setImagePreviews([]);
+        setError("");
+    }
+
     if (!loggedIn) return <AdminLogin onLogin={() => setLoggedIn(true)} />;
 
     return (
         <div className="min-h-screen bg-gray-100 p-4">
             <div className="max-w-3xl mx-auto bg-white rounded shadow p-6">
                 <h1 className="text-2xl font-bold text-black mb-4">Admin Panel</h1>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={() => setShowForm(f => !f)}>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={() => {
+                    if (showForm && editingProduct) {
+                        handleCancelEdit();
+                    } else {
+                        setShowForm(f => !f);
+                    }
+                }}>
                     {showForm ? "Close" : "Add New Product"}
                 </button>
                 {showForm && (
-                    <form onSubmit={handleAddProduct} className="mb-6 space-y-4">
+                    <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="mb-6 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input name="name" value={form.name} onChange={handleInput} required placeholder="Product Name" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
                             <input name="price" value={form.price} onChange={handleInput} required placeholder="Price" type="number" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
@@ -161,7 +258,7 @@ export default function AdminPage() {
                         
                         {/* Image Upload Section */}
                         <div className="space-y-3">
-                            <label className="block text-black font-medium">Product Images (Max 3)</label>
+                            <label className="block text-black font-medium">Product Images (Max 6)</label>
                             <input 
                                 name="images" 
                                 type="file" 
@@ -169,13 +266,13 @@ export default function AdminPage() {
                                 multiple 
                                 onChange={handleInput} 
                                 className="w-full text-black"
-                                max="3"
+                                max="6"
                             />
-                            <p className="text-sm text-gray-600">Upload 1-3 images. First image will be the main product image.</p>
+                            <p className="text-sm text-gray-600">Upload 1-6 images. First image will be the main product image. {editingProduct && "Leave empty to keep existing images."}</p>
                             
                             {/* Image Previews */}
                             {imagePreviews.length > 0 && (
-                                <div className="grid grid-cols-3 gap-3 mt-3">
+                                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-3">
                                     {imagePreviews.map((preview, index) => (
                                         <div key={index} className="relative">
                                             <Image 
@@ -204,7 +301,68 @@ export default function AdminPage() {
                             )}
                         </div>
                         
-                        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Add Product</button>
+                        {/* Shade Management Section */}
+                        <div className="space-y-3 border-t pt-4">
+                            <label className="block text-black font-medium">Product Shades (Optional)</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={newShadeName}
+                                    onChange={(e) => setNewShadeName(e.target.value)}
+                                    placeholder="Shade Name (e.g., Ruby Red)"
+                                    className="flex-1 px-3 py-2 border rounded text-black placeholder-gray-400"
+                                />
+                                <input
+                                    type="color"
+                                    value={newShadeCode}
+                                    onChange={(e) => setNewShadeCode(e.target.value)}
+                                    className="w-16 h-10 border rounded cursor-pointer"
+                                    title="Pick shade color"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={addShade}
+                                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                                >
+                                    Add Shade
+                                </button>
+                            </div>
+                            
+                            {/* Display Added Shades */}
+                            {form.shades.length > 0 && (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                                    {form.shades.map((shade, index) => (
+                                        <div key={index} className="flex items-center gap-2 p-2 border rounded bg-white">
+                                            <div
+                                                className="w-8 h-8 rounded border border-gray-300 flex-shrink-0"
+                                                style={{ backgroundColor: shade.code }}
+                                            ></div>
+                                            <span className="text-sm text-black flex-1 truncate">{shade.name}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeShade(index)}
+                                                className="text-red-500 hover:text-red-700 text-lg"
+                                                title="Remove shade"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <p className="text-sm text-gray-600">Add color variations/shades for this product (e.g., different nail polish colors)</p>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                {editingProduct ? "Update Product" : "Add Product"}
+                            </button>
+                            {editingProduct && (
+                                <button type="button" onClick={handleCancelEdit} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
                         {error && <div className="text-red-500 mt-2">{error}</div>}
                     </form>
                 )}
@@ -220,7 +378,8 @@ export default function AdminPage() {
                                     <div className="text-xs text-black">{product.description?.slice(0, 60)}...</div>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
+                                    <button onClick={() => handleEditProduct(product)} className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+                                    <button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Delete</button>
                                     {/* Show all product images */}
                                     <div className="flex space-x-1">
                                         {product.images && product.images.length > 0 ? (

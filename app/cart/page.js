@@ -9,11 +9,11 @@ import Image from 'next/image';
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
 
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = (itemIndex, newQuantity) => {
     if (newQuantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(itemIndex);
     } else {
-      updateQuantity(productId, newQuantity);
+      updateQuantity(itemIndex, newQuantity);
     }
   };
 
@@ -76,8 +76,8 @@ const CartPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
               <div className="divide-y divide-pink-100">
-                {cart.items.map((item) => (
-                  <div key={item._id} className="p-4 sm:p-6 hover:bg-pink-50/30 transition-colors">
+                {cart.items.map((item, index) => (
+                  <div key={`${item._id}-${item.selectedShade?.code || 'no-shade'}-${index}`} className="p-4 sm:p-6 hover:bg-pink-50/30 transition-colors">
                     <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                       {/* Product Image */}
                       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl sm:rounded-2xl overflow-hidden flex-shrink-0">
@@ -99,12 +99,25 @@ const CartPage = () => {
                       {/* Product Details - Flexible Layout */}
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start gap-2 mb-2">
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
-                            {item.name}
-                          </h3>
+                          <div className="flex-1">
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2">
+                              {item.name}
+                            </h3>
+                            {/* Show selected shade */}
+                            {item.selectedShade && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <div
+                                  className="w-4 h-4 rounded-full border border-gray-300"
+                                  style={{ backgroundColor: item.selectedShade.code }}
+                                  title={item.selectedShade.name}
+                                ></div>
+                                <span className="text-xs text-gray-600">{item.selectedShade.name}</span>
+                              </div>
+                            )}
+                          </div>
                           {/* Remove Button - Mobile Top Right */}
                           <button
-                            onClick={() => removeFromCart(item._id)}
+                            onClick={() => removeFromCart(index)}
                             className="text-red-500 hover:text-red-700 p-1 hover:scale-110 transition-transform sm:hidden"
                             title="Remove item"
                           >
@@ -120,7 +133,7 @@ const CartPage = () => {
                           {/* Quantity Controls */}
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
+                              onClick={() => handleQuantityChange(index, item.quantity - 1)}
                               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold text-lg"
                             >
                               -
@@ -129,7 +142,7 @@ const CartPage = () => {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                              onClick={() => handleQuantityChange(index, item.quantity + 1)}
                               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-r from-pink-100 to-purple-100 border border-pink-200 flex items-center justify-center hover:scale-110 transition-transform text-pink-600 font-bold text-lg"
                             >
                               +
@@ -147,7 +160,7 @@ const CartPage = () => {
 
                       {/* Remove Button - Desktop Only */}
                       <button
-                        onClick={() => removeFromCart(item._id)}
+                        onClick={() => removeFromCart(index)}
                         className="hidden sm:block text-red-500 hover:text-red-700 p-2 hover:scale-110 transition-transform"
                         title="Remove item"
                       >
