@@ -102,7 +102,7 @@ function HomePage() {
               </span>
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore our premium collection of beauty essentials, carefully selected to enhance your natural radiance.
+              Explore our premium collection of quality products, carefully selected to meet your needs.
             </p>
           </div>
 

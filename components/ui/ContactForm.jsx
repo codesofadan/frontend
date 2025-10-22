@@ -119,7 +119,7 @@ const ContactForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors"
-                    placeholder="+92 300 123 4567"
+                    placeholder="+92 329 943 2955"
                   />
                 </div>
 
