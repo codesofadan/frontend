@@ -189,36 +189,19 @@ const CartPage = () => {
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-gray-600">Shipping:</span>
-                  <span className="text-green-600 font-semibold">
-                    {cart.total > 100 ? 'Free' : 'Rs250.00'}
-                  </span>
+                  <span className="font-semibold">Rs250.00</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-600">Tax (8%):</span>
-                  <span className="font-semibold">Rs{(cart.total * 0.08).toFixed(2)}</span>
+                  <span className="text-gray-600">Tax (2%):</span>
+                  <span className="font-semibold">Rs{(cart.total * 0.02).toFixed(2)}</span>
                 </div>
                 <div className="border-t-2 border-pink-100 pt-2 sm:pt-3 flex justify-between text-base sm:text-lg font-bold">
                   <span>Total:</span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">
-                    Rs{(cart.total + (cart.total > 100 ? 0 : 250) + (cart.total * 0.08)).toFixed(2)}
+                    Rs{(cart.total + 250 + (cart.total * 0.02)).toFixed(2)}
                   </span>
                 </div>
               </div>
-
-              {/* Free Shipping Notice */}
-              {cart.total <= 100 && (
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6">
-                  <p className="text-xs sm:text-sm text-purple-700 font-medium">
-                    Add Rs{(100 - cart.total).toFixed(2)} more to get free shipping!
-                  </p>
-                  <div className="w-full bg-pink-100 rounded-full h-2 mt-2 sm:mt-3">
-                    <div 
-                      className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min((cart.total / 100) * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
 
               {/* Checkout Button */}
               <Link

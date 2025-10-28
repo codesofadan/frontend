@@ -89,7 +89,7 @@ const ProductCard = ({ product, onQuickView }) => {
         
         {/* Category */}
         <div className="mt-2 sm:mt-3">
-          <span className="text-[10px] sm:text-xs bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
+          <span className="text-[10px] sm:text-xs bg-gradient-to-r from-pink-50 to-purple-50 text-purple-500 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
             {product.category}
           </span>
         </div>

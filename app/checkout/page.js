@@ -3,8 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/store/CartContext';
-import { productAPI } from '@/lib/api';
-import { redirectToWhatsApp } from '@/lib/whatsapp';
+import { productAPI, orderAPI } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 
@@ -74,8 +73,8 @@ const CheckoutContent = () => {
       return total + (item.price * item.quantity);
     }, 0);
     
-    const shipping = subtotal > 100 ? 0 : 10; // Free shipping over $100
-    const tax = subtotal * 0.08; // 8% tax
+    const shipping = 250; // Fixed shipping fee of 250 Rs
+    const tax = subtotal * 0.02; // 2% tax
     const total = subtotal + shipping + tax;
     
     return { subtotal, shipping, tax, total };
@@ -113,7 +112,8 @@ const CheckoutContent = () => {
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          image: item.images?.[0]?.url || ''
+          image: item.images?.[0]?.url || '',
+          selectedShade: item.selectedShade
         })),
         subtotal: subtotal,
         shipping: shipping,
@@ -123,20 +123,27 @@ const CheckoutContent = () => {
         notes: formData.notes
       };
 
-      // Clear cart if it was a cart checkout
-      if (!searchParams.get('product')) {
-        clearCart();
+      // Create order in database
+      const response = await orderAPI.create(orderData);
+      
+      if (response.success) {
+        // Clear cart if it was a cart checkout
+        if (!searchParams.get('product')) {
+          clearCart();
+        }
+        
+        // Show success alert
+        alert(`✅ Order placed successfully!\n\nOrder Number: ${response.data.orderNumber}\n\nYou will be redirected to order confirmation page.`);
+        
+        // Redirect to order confirmation page with order ID
+        router.push(`/order-confirmation?orderId=${response.data._id}`);
+      } else {
+        throw new Error('Failed to create order');
       }
-      
-      // Redirect to WhatsApp with order details
-      redirectToWhatsApp(orderData, '923299432955');
-      
-      // Redirect to order confirmation page
-      router.push('/order-confirmation');
       
     } catch (error) {
       console.error('Error processing order:', error);
-      alert('Error processing order. Please try again.');
+      alert(error.message || 'Error processing order. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -204,7 +211,7 @@ const CheckoutContent = () => {
                       required
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                     />
                   </div>
                   <div>
@@ -217,7 +224,7 @@ const CheckoutContent = () => {
                       required
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                     />
                   </div>
                   <div>
@@ -230,8 +237,8 @@ const CheckoutContent = () => {
                       required
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="+92 329 943 2955"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors"
+                      placeholder="+92XXXXXXXXXX"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                     />
                   </div>
                 </div>
@@ -253,7 +260,7 @@ const CheckoutContent = () => {
                       required
                       value={formData.street}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -267,7 +274,7 @@ const CheckoutContent = () => {
                         required
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -280,7 +287,7 @@ const CheckoutContent = () => {
                         required
                         value={formData.state}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors text-black placeholder-gray-400"
                       />
                     </div>
                   </div>
@@ -295,7 +302,7 @@ const CheckoutContent = () => {
                         required
                         value={formData.zipCode}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -307,7 +314,7 @@ const CheckoutContent = () => {
                         required
                         value={formData.country}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 transition-colors text-black"
                       >
                         <option value="Pakistan">Pakistan</option>
                         <option value="India">India</option>
@@ -360,7 +367,7 @@ const CheckoutContent = () => {
                   value={formData.notes}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors resize-none text-black placeholder-gray-400"
                   placeholder="Any special instructions for your order..."
                 ></textarea>
               </div>
@@ -371,7 +378,7 @@ const CheckoutContent = () => {
                 disabled={submitting}
                 className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-4 px-6 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                {submitting ? 'Opening WhatsApp...' : `Order via WhatsApp - Rs${total.toFixed(2)}`}
+                {submitting ? 'Processing Order...' : `Place Order - Rs${total.toFixed(2)}`}
               </button>
             </form>
           </div>
@@ -403,6 +410,15 @@ const CheckoutContent = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                    {item.selectedShade && (
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div
+                          className="w-3 h-3 rounded-full border border-gray-300"
+                          style={{ backgroundColor: item.selectedShade.code }}
+                        ></div>
+                        <span className="text-xs text-gray-600">{item.selectedShade.name}</span>
+                      </div>
+                    )}
                     <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                   </div>
                   <div className="text-right">
@@ -423,12 +439,10 @@ const CheckoutContent = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping:</span>
-                <span className="font-semibold text-green-600">
-                  {shipping === 0 ? 'Free' : `Rs${shipping.toFixed(2)}`}
-                </span>
+                <span className="font-semibold">Rs{shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax:</span>
+                <span className="text-gray-600">Tax (2%):</span>
                 <span className="font-semibold">Rs{tax.toFixed(2)}</span>
               </div>
               <div className="border-t-2 border-pink-100 pt-2 flex justify-between text-lg font-bold">

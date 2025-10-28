@@ -228,7 +228,15 @@ export default function AdminPage() {
     return (
         <div className="min-h-screen bg-gray-100 p-4">
             <div className="max-w-3xl mx-auto bg-white rounded shadow p-6">
-                <h1 className="text-2xl font-bold text-black mb-4">Admin Panel</h1>
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-bold text-black">Admin Panel - Products</h1>
+                    <a 
+                        href="/admin/orders"
+                        className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all"
+                    >
+                        View Orders
+                    </a>
+                </div>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={() => {
                     if (showForm && editingProduct) {
                         handleCancelEdit();

@@ -1,12 +1,72 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/store/CartContext';
 
 const HeroWithNavbar = () => {
   const { getItemCount } = useCart();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  // Add your image URLs here
+  const slides = [
+    '/hero (1).jpeg', // Replace with your actual image paths
+    '/hero (2).jpeg',
+    '/hero (3).jpeg',
+    '/hero (4).jpeg',
+    '/hero (5).jpeg',
+  ];
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  // Auto-slide every 4 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [nextSlide]);
+
+  // Handle touch events for swiping
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    }
+    if (isRightSwipe) {
+      prevSlide();
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
 
   return (
     <section className="relative bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-hidden">
@@ -35,7 +95,7 @@ const HeroWithNavbar = () => {
             {/* Action Icons - Right */}
             <div className="flex items-center space-x-6">
               {/* Phone Icon */}
-              <Link href="tel:+923001234567" className="text-gray-600 hover:text-pink-600 transition-colors">
+              <Link href="tel:+923299432955" className="text-gray-600 hover:text-pink-600 transition-colors">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                 </svg>
@@ -104,75 +164,65 @@ const HeroWithNavbar = () => {
         </div>
       </div>
       
-      {/* Hero Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-10 lg:pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <div className="text-center lg:text-left">
-            <p className="text-sm font-semibold text-pink-600 tracking-wide uppercase mb-4">
-              Premium Beauty Collection
-            </p>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              Unveil Your
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 block mt-2">
-                Natural Radiance
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">
-              Discover our luxurious makeup collection crafted with premium ingredients. 
-              Enhance your natural beauty with products that care for your skin.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-              <Link
-                href="#products"
-                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Shop Collection
-              </Link>
-              
-              <Link
-                href="#bestsellers"
-                className="border-2 border-gray-900 hover:bg-gray-900 hover:text-white text-gray-900 font-semibold py-4 px-8 rounded-full transition-all duration-300"
-              >
-                View Bestsellers
-              </Link>
-            </div>
-            
-            {/* Trust Indicators */}
-            <div className="mt-12 flex items-center gap-8 justify-center lg:justify-start">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">100K+</p>
-                <p className="text-sm text-gray-600">Happy Customers</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">4.9★</p>
-                <p className="text-sm text-gray-600">Average Rating</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">Cruelty-Free</p>
-                <p className="text-sm text-gray-600">Certified</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Product Image */}
-          <div className="relative">
-            <div className="relative z-10">
+      {/* Image Slider */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+          {/* Slides */}
+          {slides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <Image
-                src="/hudahero2.png" // Replace with your makeup product image
-                alt="Premium Makeup Product"
-                width={200}
-                height={200}
-                className="w-full h-auto drop-shadow-2xl"
-                priority
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
               />
             </div>
-            
-            {/* Decorative elements behind image */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-pink-300 to-purple-300 rounded-full filter blur-3xl opacity-30"></div>
+          ))}
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:scale-110 z-10"
+            aria-label="Previous slide"
+          >
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:scale-110 z-10"
+            aria-label="Next slide"
+          >
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* Dot Indicators */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? 'bg-white w-6 sm:w-8'
+                    : 'bg-white/50 hover:bg-white/75'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>
