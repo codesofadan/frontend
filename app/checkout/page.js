@@ -107,14 +107,20 @@ const CheckoutContent = () => {
           zipCode: formData.zipCode,
           country: formData.country
         },
-        items: checkoutItems.map(item => ({
-          product: item._id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.images?.[0]?.url || '',
-          selectedShade: item.selectedShade
-        })),
+        items: checkoutItems.map(item => {
+          const orderItem = {
+            product: item._id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.images?.[0]?.url || ''
+          };
+          // Only include selectedShade if it exists
+          if (item.selectedShade) {
+            orderItem.selectedShade = item.selectedShade;
+          }
+          return orderItem;
+        }),
         subtotal: subtotal,
         shipping: shipping,
         tax: tax,
