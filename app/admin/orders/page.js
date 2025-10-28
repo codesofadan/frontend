@@ -60,7 +60,7 @@ export default function OrdersManagement() {
             case 'dispatched': return 'bg-indigo-100 text-indigo-800';
             case 'delivered': return 'bg-green-100 text-green-800';
             case 'cancelled': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-black';
         }
     }
 
@@ -143,12 +143,12 @@ export default function OrdersManagement() {
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="bg-gray-200">
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Order #</th>
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Customer</th>
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Date</th>
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Total</th>
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Status</th>
-                                        <th className="px-4 py-2 text-left text-sm font-semibold border">Actions</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Order #</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Customer</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Date</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Total</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Status</th>
+                                        <th className="px-4 py-2 text-left text-sm font-semibold border text-black">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -162,20 +162,20 @@ export default function OrdersManagement() {
                                         filteredOrders.map((order) => (
                                             <tr key={order._id} className="hover:bg-gray-50">
                                                 <td className="px-4 py-3 border">
-                                                    <span className="font-mono text-sm">{order.orderNumber}</span>
+                                                    <span className="font-mono text-sm text-black">{order.orderNumber}</span>
                                                 </td>
                                                 <td className="px-4 py-3 border">
                                                     <div>
-                                                        <p className="font-medium">
+                                                        <p className="font-medium text-black">
                                                             {order.customerInfo?.firstName} {order.customerInfo?.lastName}
                                                         </p>
                                                         <p className="text-sm text-black">{order.customerInfo?.phone}</p>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm border">
+                                                <td className="px-4 py-3 text-sm border text-black">
                                                     {new Date(order.createdAt).toLocaleDateString()}
                                                 </td>
-                                                <td className="px-4 py-3 font-semibold border">
+                                                <td className="px-4 py-3 font-semibold border text-black">
                                                     Rs {order.total?.toFixed(2)}
                                                 </td>
                                                 <td className="px-4 py-3 border">
@@ -208,11 +208,11 @@ export default function OrdersManagement() {
                         <div className="bg-gray-200 p-4 border-b flex justify-between items-center">
                             <div>
                                 <h2 className="text-xl font-bold text-black">Order Details</h2>
-                                <p className="text-sm font-mono text-gray-700">{selectedOrder.orderNumber}</p>
+                                <p className="text-sm font-mono text-black">{selectedOrder.orderNumber}</p>
                             </div>
                             <button
                                 onClick={() => setSelectedOrder(null)}
-                                className="text-gray-600 hover:text-black text-2xl font-bold"
+                                className="text-black hover:text-black text-2xl font-bold"
                             >
                                 ×
                             </button>
@@ -225,13 +225,13 @@ export default function OrdersManagement() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <p className="text-sm text-black">Name</p>
-                                        <p className="font-medium">
+                                        <p className="font-medium text-black">
                                             {selectedOrder.customerInfo?.firstName} {selectedOrder.customerInfo?.lastName}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-black">Phone</p>
-                                        <p className="font-medium">{selectedOrder.customerInfo?.phone}</p>
+                                        <p className="font-medium text-black">{selectedOrder.customerInfo?.phone}</p>
                                     </div>
                                 </div>
                             </div>
@@ -239,7 +239,7 @@ export default function OrdersManagement() {
                             {/* Shipping Address */}
                             <div className="border rounded p-4">
                                 <h3 className="font-bold text-black mb-3">Shipping Address</h3>
-                                <p>
+                                <p className="text-black">
                                     {selectedOrder.shippingAddress?.street}<br />
                                     {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} {selectedOrder.shippingAddress?.zipCode}<br />
                                     {selectedOrder.shippingAddress?.country}
@@ -253,10 +253,10 @@ export default function OrdersManagement() {
                                     <table className="w-full">
                                         <thead className="bg-gray-100">
                                             <tr>
-                                                <th className="px-4 py-2 text-left text-sm">Product</th>
-                                                <th className="px-4 py-2 text-left text-sm">Shade</th>
-                                                <th className="px-4 py-2 text-left text-sm">Qty</th>
-                                                <th className="px-4 py-2 text-right text-sm">Price</th>
+                                                <th className="px-4 py-2 text-left text-sm text-black">Product</th>
+                                                <th className="px-4 py-2 text-left text-sm text-black">Shade</th>
+                                                <th className="px-4 py-2 text-left text-sm text-black">Qty</th>
+                                                <th className="px-4 py-2 text-right text-sm text-black">Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -274,12 +274,12 @@ export default function OrdersManagement() {
                                                                         className="w-full h-full object-cover"
                                                                     />
                                                                 ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                                                    <div className="w-full h-full flex items-center justify-center text-black text-xs">
                                                                         No Image
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <span className="font-medium">{item.name}</span>
+                                                            <span className="font-medium text-black">{item.name}</span>
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3">
@@ -289,14 +289,14 @@ export default function OrdersManagement() {
                                                                     className="w-4 h-4 rounded border border-gray-300"
                                                                     style={{ backgroundColor: item.selectedShade.code }}
                                                                 ></div>
-                                                                <span className="text-sm">{item.selectedShade.name}</span>
+                                                                <span className="text-sm text-black">{item.selectedShade.name}</span>
                                                             </div>
                                                         ) : (
                                                             <span className="text-black text-sm">-</span>
                                                         )}
                                                     </td>
-                                                    <td className="px-4 py-3">{item.quantity}</td>
-                                                    <td className="px-4 py-3 text-right font-semibold">
+                                                    <td className="px-4 py-3 text-black">{item.quantity}</td>
+                                                    <td className="px-4 py-3 text-right font-semibold text-black">
                                                         Rs {(item.price * item.quantity).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -311,35 +311,35 @@ export default function OrdersManagement() {
                                 <h3 className="font-bold text-black mb-3">Order Summary</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <span>Subtotal:</span>
-                                        <span className="font-medium">Rs {selectedOrder.subtotal?.toFixed(2)}</span>
+                                        <span className="text-black">Subtotal:</span>
+                                        <span className="font-medium text-black">Rs {selectedOrder.subtotal?.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Shipping:</span>
-                                        <span className="font-medium">Rs {selectedOrder.shipping?.toFixed(2)}</span>
+                                        <span className="text-black">Shipping:</span>
+                                        <span className="font-medium text-black">Rs {selectedOrder.shipping?.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Tax (2%):</span>
-                                        <span className="font-medium">Rs {selectedOrder.tax?.toFixed(2)}</span>
+                                        <span className="text-black">Tax (2%):</span>
+                                        <span className="font-medium text-black">Rs {selectedOrder.tax?.toFixed(2)}</span>
                                     </div>
                                     <div className="border-t pt-2 flex justify-between text-lg font-bold">
-                                        <span>Total:</span>
-                                        <span>Rs {selectedOrder.total?.toFixed(2)}</span>
+                                        <span className="text-black">Total:</span>
+                                        <span className="text-black">Rs {selectedOrder.total?.toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Payment Method */}
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="font-semibold">Payment Method:</span>
-                                <span className="uppercase">{selectedOrder.paymentMethod}</span>
+                                <span className="font-semibold text-black">Payment Method:</span>
+                                <span className="uppercase text-black">{selectedOrder.paymentMethod}</span>
                             </div>
 
                             {/* Notes */}
                             {selectedOrder.notes && (
                                 <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                                    <h3 className="text-sm font-bold mb-1">Order Notes</h3>
-                                    <p className="text-sm">{selectedOrder.notes}</p>
+                                    <h3 className="text-sm font-bold mb-1 text-black">Order Notes</h3>
+                                    <p className="text-sm text-black">{selectedOrder.notes}</p>
                                 </div>
                             )}
 
