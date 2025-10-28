@@ -64,7 +64,7 @@ const OrderConfirmationContent = () => {
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
             Order Placed Successfully!
           </h1>
-          <p className="text-gray-600 text-lg">Thank you for your order. We'll process it shortly.</p>
+          <p className="text-gray-600 text-lg">Thank you for your order. We&apos;ll process it shortly.</p>
           {order && (
             <div className="mt-4 inline-block bg-white px-6 py-3 rounded-full shadow-lg">
               <p className="text-sm text-gray-600">Order Number</p>
@@ -169,7 +169,7 @@ const OrderConfirmationContent = () => {
 
         {/* Status Information */}
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-xl p-8 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">What's Next?</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">What&apos;s Next?</h2>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
               <div className="text-green-500 mt-1">
@@ -179,7 +179,7 @@ const OrderConfirmationContent = () => {
               </div>
               <div>
                 <p className="font-medium text-gray-900">Order Received</p>
-                <p className="text-sm text-gray-600">We've received your order and will process it shortly</p>
+                <p className="text-sm text-gray-600">We&apos;ve received your order and will process it shortly</p>
               </div>
             </div>
             <div className="flex items-start gap-3">

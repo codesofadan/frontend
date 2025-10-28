@@ -11,11 +11,7 @@ export default function OrdersManagement() {
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
 
-    useEffect(() => {
-        fetchOrders();
-    }, [filterStatus]);
-
-    async function fetchOrders() {
+    const fetchOrders = React.useCallback(async () => {
         setLoading(true);
         setError("");
         try {
@@ -31,7 +27,11 @@ export default function OrdersManagement() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [filterStatus]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
 
     async function updateOrderStatus(orderId, newStatus) {
         try {
