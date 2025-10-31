@@ -13,25 +13,34 @@ import { useRouter } from 'next/navigation';
 function HomePage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
+        
         const [productsResponse, categoriesResponse] = await Promise.all([
           productAPI.getAll({ 
             category: selectedCategory === 'all' ? '' : selectedCategory,
-            limit: 12 
+            page: 1,
+            limit: 10 
           }),
           productAPI.getCategories()
         ]);
         if (productsResponse.success) {
           setProducts(productsResponse.data);
+          setHasMore(productsResponse.data.length === 10);
         }
         if (categoriesResponse.success) {
           setCategories(['all', ...categoriesResponse.data]);
@@ -47,6 +56,50 @@ function HomePage() {
     };
     fetchData();
   }, [selectedCategory]);
+
+  const loadMoreProducts = async () => {
+    if (loadingMore || !hasMore) return;
+    
+    try {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      const productsResponse = await productAPI.getAll({ 
+        category: selectedCategory === 'all' ? '' : selectedCategory,
+        page: nextPage,
+        limit: 10 
+      });
+      
+      if (productsResponse.success) {
+        if (productsResponse.data.length > 0) {
+          setProducts(prev => [...prev, ...productsResponse.data]);
+          setPage(nextPage);
+          setHasMore(productsResponse.data.length === 10);
+        } else {
+          setHasMore(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading more products:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (loading || loadingMore || !hasMore) return;
+      
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const threshold = document.documentElement.scrollHeight - 500;
+      
+      if (scrollPosition >= threshold) {
+        loadMoreProducts();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loading, loadingMore, hasMore, page, selectedCategory]);
 
   const handleQuickView = (product) => {
     setSelectedProduct(product);
@@ -139,20 +192,37 @@ function HomePage() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
-              {products.map((product) => (
-                <div
-                  key={product._id}
-                  className="transform transition-all duration-300 hover:scale-105"
-                >
-                  <ProductCard
-                    product={product}
-                    onQuickView={handleQuickView}
-                    className="bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden"
-                  />
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
+                {products.map((product) => (
+                  <div
+                    key={product._id}
+                    className="transform transition-all duration-300 hover:scale-105"
+                  >
+                    <ProductCard
+                      product={product}
+                      onQuickView={handleQuickView}
+                      className="bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden"
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Loading More Indicator */}
+              {loadingMore && (
+                <div className="flex justify-center items-center py-8 mt-8">
+                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-pink-600 border-t-transparent"></div>
+                  <span className="ml-3 text-gray-600">Loading more products...</span>
                 </div>
-              ))}
-            </div>
+              )}
+              
+              {/* No More Products Message */}
+              {!hasMore && products.length > 0 && (
+                <div className="text-center py-8 mt-8">
+                  <p className="text-gray-600">You&apos;ve reached the end of our collection!</p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl shadow-xl">
               <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-6">

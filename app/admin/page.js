@@ -8,8 +8,11 @@ export default function AdminPage() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
     const [showForm, setShowForm] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     const [form, setForm] = useState({
         name: "",
         price: "",
@@ -28,20 +31,67 @@ export default function AdminPage() {
     const [editingProduct, setEditingProduct] = useState(null);
 
     useEffect(() => {
-        if (loggedIn) fetchProducts();
+        if (loggedIn) {
+            fetchProducts();
+        }
     }, [loggedIn]);
+
+    useEffect(() => {
+        if (!loggedIn || loading || loadingMore || !hasMore) return;
+
+        const handleScroll = () => {
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const threshold = document.documentElement.scrollHeight - 500;
+            
+            if (scrollPosition >= threshold) {
+                loadMoreProducts();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [loggedIn, loading, loadingMore, hasMore, page]);
 
     async function fetchProducts() {
         setLoading(true);
         setError("");
+        setPage(1);
+        setHasMore(true);
         try {
-            const res = await productAPI.getAll();
-            if (res.success) setProducts(res.data);
-            else setError(res.error || "Failed to fetch products");
+            const res = await productAPI.getAll({ page: 1, limit: 10 });
+            if (res.success) {
+                setProducts(res.data);
+                setHasMore(res.data.length === 10);
+            } else {
+                setError(res.error || "Failed to fetch products");
+            }
         } catch (e) {
             setError(e.message);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function loadMoreProducts() {
+        if (loadingMore || !hasMore) return;
+        
+        setLoadingMore(true);
+        try {
+            const nextPage = page + 1;
+            const res = await productAPI.getAll({ page: nextPage, limit: 10 });
+            if (res.success) {
+                if (res.data.length > 0) {
+                    setProducts(prev => [...prev, ...res.data]);
+                    setPage(nextPage);
+                    setHasMore(res.data.length === 10);
+                } else {
+                    setHasMore(false);
+                }
+            }
+        } catch (e) {
+            console.error('Error loading more products:', e);
+        } finally {
+            setLoadingMore(false);
         }
     }
 
@@ -416,6 +466,21 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         ))}
+                        
+                        {/* Loading More Indicator */}
+                        {loadingMore && (
+                            <div className="flex justify-center items-center py-6">
+                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+                                <span className="ml-3 text-black">Loading more products...</span>
+                            </div>
+                        )}
+                        
+                        {/* No More Products Message */}
+                        {!hasMore && products.length > 0 && (
+                            <div className="text-center py-6 text-black">
+                                All products loaded.
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

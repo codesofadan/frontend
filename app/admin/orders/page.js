@@ -6,22 +6,31 @@ import { orderAPI } from "@/lib/api";
 export default function OrdersManagement() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
     const fetchOrders = React.useCallback(async () => {
         setLoading(true);
         setError("");
+        setPage(1);
+        setHasMore(true);
         try {
-            const filters = {};
+            const filters = { page: 1, limit: 10 };
             if (filterStatus !== "all") {
                 filters.status = filterStatus;
             }
             const res = await orderAPI.getAll(filters);
-            if (res.success) setOrders(res.data);
-            else setError(res.error || "Failed to fetch orders");
+            if (res.success) {
+                setOrders(res.data);
+                setHasMore(res.data.length === 10);
+            } else {
+                setError(res.error || "Failed to fetch orders");
+            }
         } catch (e) {
             setError(e.message);
         } finally {
@@ -29,9 +38,52 @@ export default function OrdersManagement() {
         }
     }, [filterStatus]);
 
+    const loadMoreOrders = React.useCallback(async () => {
+        if (loadingMore || !hasMore) return;
+        
+        setLoadingMore(true);
+        try {
+            const nextPage = page + 1;
+            const filters = { page: nextPage, limit: 10 };
+            if (filterStatus !== "all") {
+                filters.status = filterStatus;
+            }
+            const res = await orderAPI.getAll(filters);
+            if (res.success) {
+                if (res.data.length > 0) {
+                    setOrders(prev => [...prev, ...res.data]);
+                    setPage(nextPage);
+                    setHasMore(res.data.length === 10);
+                } else {
+                    setHasMore(false);
+                }
+            }
+        } catch (e) {
+            console.error('Error loading more orders:', e);
+        } finally {
+            setLoadingMore(false);
+        }
+    }, [loadingMore, hasMore, page, filterStatus]);
+
     useEffect(() => {
         fetchOrders();
     }, [fetchOrders]);
+
+    useEffect(() => {
+        if (loading || loadingMore || !hasMore) return;
+
+        const handleScroll = () => {
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const threshold = document.documentElement.scrollHeight - 500;
+            
+            if (scrollPosition >= threshold) {
+                loadMoreOrders();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [loading, loadingMore, hasMore, loadMoreOrders]);
 
     async function updateOrderStatus(orderId, newStatus) {
         try {
@@ -197,6 +249,21 @@ export default function OrdersManagement() {
                                 </tbody>
                             </table>
                         </div>
+                        
+                        {/* Loading More Indicator */}
+                        {loadingMore && (
+                            <div className="flex justify-center items-center py-6 mt-4">
+                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+                                <span className="ml-3 text-black">Loading more orders...</span>
+                            </div>
+                        )}
+                        
+                        {/* No More Orders Message */}
+                        {!hasMore && filteredOrders.length > 0 && (
+                            <div className="text-center py-6 mt-4 text-black">
+                                All orders loaded.
+                            </div>
+                        )}
                     </>
                 )}
             </div>
