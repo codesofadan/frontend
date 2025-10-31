@@ -245,20 +245,6 @@ function HomePage() {
             </div>
           )}
 
-          {/* View All Products CTA */}
-          {products.length > 0 && (
-            <div className="text-center mt-16">
-              <button 
-                onClick={() => router.push('/products')}
-                className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white px-10 py-4 rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <span>Explore Full Collection</span>
-                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Bottom Wave Transition */}
