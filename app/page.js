@@ -85,22 +85,6 @@ function HomePage() {
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (loading || loadingMore || !hasMore) return;
-      
-      const scrollPosition = window.innerHeight + window.scrollY;
-      const threshold = document.documentElement.scrollHeight - 500;
-      
-      if (scrollPosition >= threshold) {
-        loadMoreProducts();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, loadingMore, hasMore, page, selectedCategory]);
-
   const handleQuickView = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -207,6 +191,18 @@ function HomePage() {
                   </div>
                 ))}
               </div>
+              
+              {/* Load More Button */}
+              {hasMore && !loadingMore && (
+                <div className="text-center mt-12">
+                  <button
+                    onClick={loadMoreProducts}
+                    className="px-8 py-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-full font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    Load More Products
+                  </button>
+                </div>
+              )}
               
               {/* Loading More Indicator */}
               {loadingMore && (
