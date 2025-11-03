@@ -346,20 +346,26 @@ export default function OrdersManagement() {
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <span className="font-medium text-black">{item.name}</span>
+                                                            <div>
+                                                                <span className="font-medium text-black block">{item.name}</span>
+                                                                {item.selectedShade && (
+                                                                    <span className="text-xs text-gray-600">Shade: {item.selectedShade.name}</span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         {item.selectedShade ? (
                                                             <div className="flex items-center gap-2">
                                                                 <div
-                                                                    className="w-4 h-4 rounded border border-gray-300"
+                                                                    className="w-6 h-6 rounded border border-gray-300 flex-shrink-0"
                                                                     style={{ backgroundColor: item.selectedShade.code }}
+                                                                    title={item.selectedShade.name}
                                                                 ></div>
                                                                 <span className="text-sm text-black">{item.selectedShade.name}</span>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-black text-sm">-</span>
+                                                            <span className="text-black text-sm">No shade</span>
                                                         )}
                                                     </td>
                                                     <td className="px-4 py-3 text-black">{item.quantity}</td>
