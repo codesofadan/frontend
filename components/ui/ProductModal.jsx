@@ -22,6 +22,7 @@ const ProductModal = ({ product, isOpen, onClose, onBuyNow }) => {
       ...product,
       selectedShade: selectedShade
     };
+    console.log('Adding to cart with shade:', selectedShade);
     for (let i = 0; i < quantity; i++) {
       addToCart(productWithShade);
     }
@@ -180,32 +181,38 @@ const ProductModal = ({ product, isOpen, onClose, onBuyNow }) => {
                       Select Shade {selectedShade && <span className="text-pink-600">- {selectedShade.name}</span>}
                     </h3>
                     <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                      {product.shades.map((shade, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                          <button
-                            onClick={() => setSelectedShade(shade)}
-                            className={`group relative aspect-square w-full rounded-xl overflow-hidden transition-all duration-300 ${
-                              selectedShade?.name === shade.name && selectedShade?.code === shade.code
-                                ? 'ring-3 ring-pink-400 ring-offset-2 scale-105 shadow-lg'
-                                : 'ring-2 ring-gray-200 hover:ring-pink-200 hover:scale-105'
-                            }`}
-                            title={shade.name}
-                          >
-                            <div
-                              className="w-full h-full"
-                              style={{ backgroundColor: shade.code }}
-                            ></div>
-                            {selectedShade?.name === shade.name && selectedShade?.code === shade.code && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            )}
-                          </button>
-                          <p className="text-[10px] mt-1 text-gray-600 text-center line-clamp-1">{shade.name}</p>
-                        </div>
-                      ))}
+                      {product.shades.map((shade, index) => {
+                        const isSelected = selectedShade && 
+                          selectedShade.name === shade.name && 
+                          selectedShade.code === shade.code;
+                        
+                        return (
+                          <div key={`${shade.name}-${shade.code}-${index}`} className="flex flex-col items-center">
+                            <button
+                              onClick={() => setSelectedShade({ name: shade.name, code: shade.code })}
+                              className={`group relative aspect-square w-full rounded-xl overflow-hidden transition-all duration-300 ${
+                                isSelected
+                                  ? 'ring-3 ring-pink-400 ring-offset-2 scale-105 shadow-lg'
+                                  : 'ring-2 ring-gray-200 hover:ring-pink-200 hover:scale-105'
+                              }`}
+                              title={shade.name}
+                            >
+                              <div
+                                className="w-full h-full"
+                                style={{ backgroundColor: shade.code }}
+                              ></div>
+                              {isSelected && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              )}
+                            </button>
+                            <p className="text-[10px] mt-1 text-gray-600 text-center line-clamp-1">{shade.name}</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

@@ -117,7 +117,10 @@ const CheckoutContent = () => {
           };
           // Only include selectedShade if it exists
           if (item.selectedShade) {
-            orderItem.selectedShade = item.selectedShade;
+            orderItem.selectedShade = {
+              name: item.selectedShade.name,
+              code: item.selectedShade.code
+            };
           }
           return orderItem;
         }),
@@ -128,6 +131,8 @@ const CheckoutContent = () => {
         paymentMethod: formData.paymentMethod,
         notes: formData.notes
       };
+
+      console.log('Creating order with data:', JSON.stringify(orderData, null, 2));
 
       // Create order in database
       const response = await orderAPI.create(orderData);
