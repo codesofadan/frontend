@@ -41,13 +41,24 @@ const CheckoutContent = () => {
         const quantity = parseInt(searchParams.get('quantity')) || 1;
         
         if (productId) {
-          // Single product checkout
-          const response = await productAPI.getById(productId);
-          if (response.success) {
+          // Single product checkout - check cart first for shade data
+          const cartItem = cart.items.find(item => item._id === productId);
+          
+          if (cartItem) {
+            // Use cart item which has shade data
             setCheckoutItems([{
-              ...response.data,
+              ...cartItem,
               quantity: quantity
             }]);
+          } else {
+            // Fallback: fetch from API if not in cart
+            const response = await productAPI.getById(productId);
+            if (response.success) {
+              setCheckoutItems([{
+                ...response.data,
+                quantity: quantity
+              }]);
+            }
           }
         } else if (cart.items.length > 0) {
           // Cart checkout
