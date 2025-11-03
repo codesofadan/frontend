@@ -34,11 +34,14 @@ const ProductModal = ({ product, isOpen, onClose, onBuyNow }) => {
       ...product,
       selectedShade: selectedShade
     };
-    // Add to cart first
-    for (let i = 0; i < quantity; i++) {
-      addToCart(productWithShade);
+    // Store temporarily in sessionStorage for checkout
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('buyNowProduct', JSON.stringify({
+        product: productWithShade,
+        quantity: quantity
+      }));
     }
-    // Then proceed to checkout
+    // Proceed to checkout without adding to cart
     onBuyNow(productWithShade, quantity);
     onClose();
   };

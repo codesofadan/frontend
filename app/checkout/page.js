@@ -41,7 +41,29 @@ const CheckoutContent = () => {
         const quantity = parseInt(searchParams.get('quantity')) || 1;
         
         if (productId) {
-          // Single product checkout - check cart first for shade data
+          // Check sessionStorage first for Buy Now flow (includes shade data)
+          const buyNowData = sessionStorage.getItem('buyNowProduct');
+          
+          if (buyNowData) {
+            try {
+              const { product, quantity: buyNowQuantity } = JSON.parse(buyNowData);
+              if (product._id === productId) {
+                // Use Buy Now product data with shade
+                setCheckoutItems([{
+                  ...product,
+                  quantity: buyNowQuantity
+                }]);
+                // Clear sessionStorage after using
+                sessionStorage.removeItem('buyNowProduct');
+                setLoading(false);
+                return;
+              }
+            } catch (e) {
+              console.error('Error parsing buyNowProduct:', e);
+            }
+          }
+          
+          // Fallback: check cart for the product
           const cartItem = cart.items.find(item => item._id === productId);
           
           if (cartItem) {
@@ -51,7 +73,7 @@ const CheckoutContent = () => {
               quantity: quantity
             }]);
           } else {
-            // Fallback: fetch from API if not in cart
+            // Last resort: fetch from API if not in cart or sessionStorage
             const response = await productAPI.getById(productId);
             if (response.success) {
               setCheckoutItems([{
