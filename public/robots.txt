@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Block access to admin areas
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Block access to private API routes
+Disallow: /api/orders/
+Disallow: /api/users/
+
+# Allow crawling of public content
+Allow: /api/products/
+Allow: /api/categories/
+
+# Sitemap
+Sitemap: https://hudamoji.pk/sitemap.xml

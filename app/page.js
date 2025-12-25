@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/ui/Hero';
 import ProductCard from '@/components/ui/ProductCard';
@@ -99,7 +100,60 @@ function HomePage() {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <>
+      <Head>
+        <title>Hudamoji - Quality Products at Great Prices | Online Store</title>
+        <meta name="description" content="Discover amazing products at unbeatable prices. Quality you can trust, delivered right to your doorstep. Shop nails, Hudamoji products, and mix brands online." />
+        <meta name="keywords" content="Hudamoji, quality products, online store, nails, beauty products, affordable shopping, fast delivery" />
+        <meta name="author" content="Hudamoji Team" />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Hudamoji - Quality Products at Great Prices" />
+        <meta property="og:description" content="Discover amazing products at unbeatable prices. Quality you can trust, delivered right to your doorstep." />
+        <meta property="og:url" content="https://hudamoji.pk" />
+        <meta property="og:site_name" content="Hudamoji" />
+        <meta property="og:image" content="https://hudamoji.pk/og-image.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Hudamoji - Quality Products at Great Prices" />
+        <meta name="twitter:description" content="Discover amazing products at unbeatable prices. Quality you can trust, delivered right to your doorstep." />
+        <meta name="twitter:image" content="https://hudamoji.pk/og-image.jpg" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://hudamoji.pk" />
+        
+        {/* Favicon and Manifest */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Hudamoji",
+              "url": "https://hudamoji.pk",
+              "description": "Online store for quality products including nails, Hudamoji products, and mix brands.",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://hudamoji.pk/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+      </Head>
+      <div className="relative overflow-hidden">
       {/* Hero Section with integrated navbar */}
       <Hero />
 
@@ -274,7 +328,8 @@ function HomePage() {
         onClose={() => setIsModalOpen(false)}
         onBuyNow={handleBuyNow}
       />
-    </div>
+      </div>
+    </>
   );
 }
 
