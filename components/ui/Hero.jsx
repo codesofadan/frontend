@@ -164,14 +164,9 @@ const HeroWithNavbar = () => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-      
+
       {/* Image Slider - Commented out, replaced with SEO-friendly hero below */}
       {/*
-=======
-
-      {/* Image Slider */}
->>>>>>> dbdbf0e684e408056750d6b7fde0ed7e4327017b
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
           {slides.map((slide, index) => (
@@ -228,7 +223,6 @@ const HeroWithNavbar = () => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
       */}
 
       {/* SEO-Friendly Hero Section */}
@@ -239,9 +233,9 @@ const HeroWithNavbar = () => {
             <span className="inline-block px-4 py-1.5 mb-4 text-xs sm:text-sm font-semibold tracking-wider uppercase text-pink-700 bg-pink-100 rounded-full">
               Premium Beauty & Lifestyle Brand
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-5">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-5">
               Shop <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Hudamoji</span> — Authentic Beauty Products in Pakistan
-            </h1>
+            </h2>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               Discover Hudamoji&apos;s curated collection of premium beauty, skincare and lifestyle essentials. Trusted quality, unbeatable prices and fast nationwide delivery across Pakistan — straight to your doorstep.
             </p>
@@ -308,10 +302,7 @@ const HeroWithNavbar = () => {
           </div>
         </div>
       </div>
-      
-=======
 
->>>>>>> dbdbf0e684e408056750d6b7fde0ed7e4327017b
       {/* Bottom Wave */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden">
         <svg
