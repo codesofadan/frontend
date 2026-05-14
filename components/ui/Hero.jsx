@@ -164,10 +164,10 @@ const HeroWithNavbar = () => {
         </div>
       </div>
       
-      {/* Image Slider */}
+      {/* Image Slider - Commented out, replaced with SEO-friendly hero below */}
+      {/*
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
-          {/* Slides */}
           {slides.map((slide, index) => (
             <div
               key={index}
@@ -188,7 +188,6 @@ const HeroWithNavbar = () => {
             </div>
           ))}
 
-          {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:scale-110 z-10"
@@ -209,7 +208,6 @@ const HeroWithNavbar = () => {
             </svg>
           </button>
 
-          {/* Dot Indicators */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
             {slides.map((_, index) => (
               <button
@@ -223,6 +221,85 @@ const HeroWithNavbar = () => {
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
+          </div>
+        </div>
+      </div>
+      */}
+
+      {/* SEO-Friendly Hero Section */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Text Content */}
+          <div className="text-center lg:text-left order-2 lg:order-1">
+            <span className="inline-block px-4 py-1.5 mb-4 text-xs sm:text-sm font-semibold tracking-wider uppercase text-pink-700 bg-pink-100 rounded-full">
+              Premium Beauty & Lifestyle Brand
+            </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-5">
+              Shop <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Hudamoji</span> — Authentic Beauty Products in Pakistan
+            </h1>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Discover Hudamoji&apos;s curated collection of premium beauty, skincare and lifestyle essentials. Trusted quality, unbeatable prices and fast nationwide delivery across Pakistan — straight to your doorstep.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Link
+                href="#products"
+                className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-pink-600 to-purple-600 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                Shop Now
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              <Link
+                href="tel:+923299432955"
+                className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-pink-700 bg-white border-2 border-pink-200 rounded-full hover:bg-pink-50 hover:border-pink-300 transition-all duration-300"
+              >
+                Order on Call
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-10 grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-bold text-gray-900">100%</p>
+                <p className="text-xs sm:text-sm text-gray-600">Authentic</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-bold text-gray-900">Rs 250</p>
+                <p className="text-xs sm:text-sm text-gray-600">Flat Delivery</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <p className="text-2xl font-bold text-gray-900">COD</p>
+                <p className="text-xs sm:text-sm text-gray-600">Available</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Image */}
+          <div className="relative order-1 lg:order-2">
+            <div className="relative w-full aspect-square sm:aspect-[4/5] lg:aspect-square rounded-3xl overflow-hidden shadow-2xl">
+              <Image
+                src="/hudahero1.png"
+                alt="Hudamoji premium beauty and skincare product range — authentic cosmetics available for online delivery in Pakistan"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 600px"
+              />
+            </div>
+            {/* Floating accent */}
+            <div className="hidden sm:block absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl px-5 py-3">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-sm font-semibold text-gray-900">Loved by 10k+</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -101,7 +101,8 @@ function HomePage() {
   return (
     <div className="relative overflow-hidden">
       {/* Hero Section with integrated navbar */}
-      <Hero />
+      <Navbar/>
+      {/* <Hero /> */}
 
       {/* Products Section */}
       <section id="products" className="relative bg-gradient-to-br from-white via-pink-50 to-purple-50 overflow-hidden">
