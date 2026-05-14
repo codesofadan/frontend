@@ -52,7 +52,7 @@ const HeroWithNavbar = () => {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
@@ -70,13 +70,14 @@ const HeroWithNavbar = () => {
 
   return (
     <section className="relative bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-hidden">
+      <h1 className="sr-only">Hudamoji Pakistan - The Best Beauty Products, Nails, and Cosmetics</h1>
       {/* Decorative background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
-      
+
       {/* Navbar */}
       <nav className="relative z-20">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -97,14 +98,14 @@ const HeroWithNavbar = () => {
               {/* Phone Icon */}
               <Link href="tel:+923299432955" className="text-gray-600 hover:text-pink-600 transition-colors">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
               </Link>
 
               {/* Cart Icon */}
               <Link href="/cart" className="text-gray-600 hover:text-pink-600 transition-colors relative">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z"/>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z" />
                 </svg>
                 {/* Cart Badge */}
                 {getItemCount() > 0 && (
@@ -117,63 +118,67 @@ const HeroWithNavbar = () => {
           </div>
         </div>
       </nav>
-      
+
       {/* Delivery Ticker */}
       <div className="relative z-20 bg-gradient-to-r from-pink-600 to-purple-600 text-white py-2 overflow-hidden">
         <div className="flex animate-marquee">
           <div className="flex-shrink-0 flex items-center">
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
           </div>
           <div className="flex-shrink-0 flex items-center" aria-hidden="true">
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
             <span className="text-sm font-medium px-4">
-              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN • 
+              DELIVERY CHARGES RS 250 ALL OVER PAKISTAN •
             </span>
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       
       {/* Image Slider - Commented out, replaced with SEO-friendly hero below */}
       {/*
+=======
+
+      {/* Image Slider */}
+>>>>>>> dbdbf0e684e408056750d6b7fde0ed7e4327017b
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                }`}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -213,17 +218,17 @@ const HeroWithNavbar = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
                     ? 'bg-white w-6 sm:w-8'
                     : 'bg-white/50 hover:bg-white/75'
-                }`}
+                  }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       */}
 
       {/* SEO-Friendly Hero Section */}
@@ -304,6 +309,9 @@ const HeroWithNavbar = () => {
         </div>
       </div>
       
+=======
+
+>>>>>>> dbdbf0e684e408056750d6b7fde0ed7e4327017b
       {/* Bottom Wave */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden">
         <svg
