@@ -79,7 +79,7 @@ function HomePage() {
         }
       }
     } catch (error) {
-      console.error('Error loading more products:', error);
+      console.error('Error loading more product:', error);
     } finally {
       setLoadingMore(false);
     }
