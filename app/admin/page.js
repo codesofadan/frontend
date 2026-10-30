@@ -1,489 +1,262 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import AdminLogin from "./login";
-import { productAPI } from "@/lib/api";
+'use client';
 
-export default function AdminPage() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [error, setError] = useState("");
-    const [showForm, setShowForm] = useState(false);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [form, setForm] = useState({
-        name: "",
-        price: "",
-        originalPrice: "",
-        category: "",
-        stock: "",
-        featured: false,
-        description: "",
-        images: [],
-        shades: []
-    });
-    const [imagePreviews, setImagePreviews] = useState([]);
-    const [newShadeName, setNewShadeName] = useState("");
-    const [newShadeCode, setNewShadeCode] = useState("#000000");
-    const [categories, setCategories] = useState(["nails", "hudamoji", "mix brands"]);
-    const [editingProduct, setEditingProduct] = useState(null);
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { FiAlertTriangle, FiArrowRight, FiClock, FiPlus, FiRefreshCw, FiShoppingCart } from 'react-icons/fi';
+import { adminAPI } from '@/lib/adminApi';
+import { formatRs, timeAgo } from '@/lib/format';
+import { Card, ErrorBanner, PageHeader, Skeleton, StatusBadge, ghostBtn, primaryBtn } from '@/components/admin/ui';
 
-    useEffect(() => {
-        if (loggedIn) {
-            fetchProducts();
-        }
-    }, [loggedIn]);
+const dayLabel = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 
-    useEffect(() => {
-        if (!loggedIn || loading || loadingMore || !hasMore) return;
+function RevenueChart({ days }) {
+  const [range, setRange] = useState(14);
+  const [hover, setHover] = useState(null);
+  const data = days.slice(-range);
+  const max = Math.max(...data.map((d) => d.revenue), 1);
+  const total = data.reduce((a, d) => ({ revenue: a.revenue + d.revenue, orders: a.orders + d.orders }), { revenue: 0, orders: 0 });
+  const day = hover != null ? data[hover] : null;
 
-        const handleScroll = () => {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const threshold = document.documentElement.scrollHeight - 500;
-            
-            if (scrollPosition >= threshold) {
-                loadMoreProducts();
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [loggedIn, loading, loadingMore, hasMore, page]);
-
-    async function fetchProducts() {
-        setLoading(true);
-        setError("");
-        setPage(1);
-        setHasMore(true);
-        try {
-            const res = await productAPI.getAll({ page: 1, limit: 10 });
-            if (res.success) {
-                setProducts(res.data);
-                setHasMore(res.data.length === 10);
-            } else {
-                setError(res.error || "Failed to fetch products");
-            }
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function loadMoreProducts() {
-        if (loadingMore || !hasMore) return;
-        
-        setLoadingMore(true);
-        try {
-            const nextPage = page + 1;
-            const res = await productAPI.getAll({ page: nextPage, limit: 10 });
-            if (res.success) {
-                if (res.data.length > 0) {
-                    setProducts(prev => [...prev, ...res.data]);
-                    setPage(nextPage);
-                    setHasMore(res.data.length === 10);
-                } else {
-                    setHasMore(false);
-                }
-            }
-        } catch (e) {
-            console.error('Error loading more products:', e);
-        } finally {
-            setLoadingMore(false);
-        }
-    }
-
-    function handleInput(e) {
-        const { name, value, type, files } = e.target;
-        if (type === "file") {
-            const fileList = Array.from(files).slice(0, 6); // Limit to 6 images
-            setForm(f => ({ ...f, images: fileList }));
-            
-            // Create image previews
-            const previews = fileList.map(file => URL.createObjectURL(file));
-            setImagePreviews(previews);
-        } else if (type === "checkbox") {
-            setForm(f => ({ ...f, [name]: e.target.checked }));
-        } else {
-            setForm(f => ({ ...f, [name]: value }));
-        }
-    }
-
-    function removeImage(index) {
-        const newImages = form.images.filter((_, i) => i !== index);
-        const newPreviews = imagePreviews.filter((_, i) => i !== index);
-        setForm(f => ({ ...f, images: newImages }));
-        setImagePreviews(newPreviews);
-    }
-
-    function addShade() {
-        if (!newShadeName.trim()) {
-            alert("Please enter a shade name");
-            return;
-        }
-        const newShade = { name: newShadeName.trim(), code: newShadeCode };
-        setForm(f => ({ ...f, shades: [...f.shades, newShade] }));
-        setNewShadeName("");
-        setNewShadeCode("#000000");
-    }
-
-    function removeShade(index) {
-        setForm(f => ({ ...f, shades: f.shades.filter((_, i) => i !== index) }));
-    }
-
-    async function handleAddProduct(e) {
-        e.preventDefault();
-        
-        // Validate images
-        if (!form.images || form.images.length === 0) {
-            setError("Please select at least one product image");
-            return;
-        }
-        
-        if (form.images.length > 6) {
-            setError("Maximum 6 images allowed");
-            return;
-        }
-        
-        setLoading(true);
-        setError("");
-        try {
-            const fd = new FormData();
-            Object.entries(form).forEach(([k, v]) => {
-                if (k === "images") {
-                    if (v && v.length > 0) {
-                        v.forEach(file => fd.append("images", file));
-                    }
-                } else if (k === "shades") {
-                    fd.append("shades", JSON.stringify(v));
-                } else {
-                    fd.append(k, v);
-                }
-            });
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products`, {
-                method: "POST",
-                body: fd
-            });
-            const data = await res.json();
-            if (data.success) {
-                setShowForm(false);
-                setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
-                setImagePreviews([]);
-                fetchProducts();
-                alert("Product added!");
-            } else {
-                setError(data.error || "Failed to add product");
-            }
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function handleDeleteProduct(id) {
-        if (!window.confirm("Delete this product?")) return;
-        setLoading(true);
-        setError("");
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products/${id}`, { method: "DELETE" });
-            const data = await res.json();
-            if (data.success) {
-                fetchProducts();
-                alert("Product deleted!");
-            } else {
-                setError(data.error || "Failed to delete product");
-            }
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    function handleEditProduct(product) {
-        setEditingProduct(product);
-        setForm({
-            name: product.name,
-            price: product.price,
-            originalPrice: product.originalPrice || "",
-            category: product.category,
-            stock: product.stock,
-            featured: product.featured,
-            description: product.description,
-            images: [],
-            shades: product.shades || []
-        });
-        // Set existing image previews
-        setImagePreviews(product.images.map(img => img.url));
-        setShowForm(true);
-    }
-
-    async function handleUpdateProduct(e) {
-        e.preventDefault();
-        
-        if (!editingProduct) return;
-        
-        setLoading(true);
-        setError("");
-        try {
-            const fd = new FormData();
-            Object.entries(form).forEach(([k, v]) => {
-                if (k === "images") {
-                    if (v && v.length > 0) {
-                        v.forEach(file => fd.append("images", file));
-                        fd.append("replaceImages", "true");
-                    }
-                } else if (k === "shades") {
-                    fd.append("shades", JSON.stringify(v));
-                } else {
-                    fd.append(k, v);
-                }
-            });
-            
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products/${editingProduct._id}`, {
-                method: "PUT",
-                body: fd
-            });
-            const data = await res.json();
-            if (data.success) {
-                setShowForm(false);
-                setEditingProduct(null);
-                setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
-                setImagePreviews([]);
-                fetchProducts();
-                alert("Product updated!");
-            } else {
-                setError(data.error || "Failed to update product");
-            }
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    function handleCancelEdit() {
-        setEditingProduct(null);
-        setShowForm(false);
-        setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", featured: false, description: "", images: [], shades: [] });
-        setImagePreviews([]);
-        setError("");
-    }
-
-    if (!loggedIn) return <AdminLogin onLogin={() => setLoggedIn(true)} />;
-
-    return (
-        <div className="min-h-screen bg-gray-100 p-4">
-            <div className="max-w-3xl mx-auto bg-white rounded shadow p-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-bold text-black">Admin Panel - Products</h1>
-                    <a 
-                        href="/admin/orders"
-                        className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all"
-                    >
-                        View Orders
-                    </a>
-                </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={() => {
-                    if (showForm && editingProduct) {
-                        handleCancelEdit();
-                    } else {
-                        setShowForm(f => !f);
-                    }
-                }}>
-                    {showForm ? "Close" : "Add New Product"}
-                </button>
-                {showForm && (
-                    <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="mb-6 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input name="name" value={form.name} onChange={handleInput} required placeholder="Product Name" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
-                            <input name="price" value={form.price} onChange={handleInput} required placeholder="Price" type="number" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
-                            <input name="originalPrice" value={form.originalPrice} onChange={handleInput} placeholder="Original Price" type="number" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
-                            <select name="category" value={form.category} onChange={handleInput} required className="px-3 py-2 border rounded w-full text-black">
-                                <option value="" className="text-black">Select Category</option>
-                                {categories.map(c => <option key={c} value={c} className="text-black">{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-                            </select>
-                            <input name="stock" value={form.stock} onChange={handleInput} required placeholder="Stock" type="number" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
-                            <label className="flex items-center space-x-2">
-                                <input name="featured" type="checkbox" checked={form.featured} onChange={handleInput} />
-                                <span className="text-black">Featured</span>
-                            </label>
-                        </div>
-                        <textarea name="description" value={form.description} onChange={handleInput} required placeholder="Description" className="px-3 py-2 border rounded w-full text-black placeholder-black" />
-                        
-                        {/* Image Upload Section */}
-                        <div className="space-y-3">
-                            <label className="block text-black font-medium">Product Images (Max 6)</label>
-                            <input 
-                                name="images" 
-                                type="file" 
-                                accept="image/*" 
-                                multiple 
-                                onChange={handleInput} 
-                                className="w-full text-black"
-                                max="6"
-                            />
-                            <p className="text-sm text-gray-600">Upload 1-6 images. First image will be the main product image. {editingProduct && "Leave empty to keep existing images."}</p>
-                            
-                            {/* Image Previews */}
-                            {imagePreviews.length > 0 && (
-                                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-3">
-                                    {imagePreviews.map((preview, index) => (
-                                        <div key={index} className="relative">
-                                            <Image 
-                                                src={preview} 
-                                                alt={`Preview ${index + 1}`} 
-                                                width={200}
-                                                height={96}
-                                                className="w-full h-24 object-cover rounded border"
-                                                unoptimized
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeImage(index)}
-                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                                            >
-                                                ×
-                                            </button>
-                                            {index === 0 && (
-                                                <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
-                                                    Main
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        
-                        {/* Shade Management Section */}
-                        <div className="space-y-3 border-t pt-4">
-                            <label className="block text-black font-medium">Product Shades (Optional)</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newShadeName}
-                                    onChange={(e) => setNewShadeName(e.target.value)}
-                                    placeholder="Shade Name (e.g., Ruby Red)"
-                                    className="flex-1 px-3 py-2 border rounded text-black placeholder-gray-400"
-                                />
-                                <input
-                                    type="color"
-                                    value={newShadeCode}
-                                    onChange={(e) => setNewShadeCode(e.target.value)}
-                                    className="w-16 h-10 border rounded cursor-pointer"
-                                    title="Pick shade color"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={addShade}
-                                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-                                >
-                                    Add Shade
-                                </button>
-                            </div>
-                            
-                            {/* Display Added Shades */}
-                            {form.shades.length > 0 && (
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                                    {form.shades.map((shade, index) => (
-                                        <div key={index} className="flex items-center gap-2 p-2 border rounded bg-white">
-                                            <div
-                                                className="w-8 h-8 rounded border border-gray-300 flex-shrink-0"
-                                                style={{ backgroundColor: shade.code }}
-                                            ></div>
-                                            <span className="text-sm text-black flex-1 truncate">{shade.name}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeShade(index)}
-                                                className="text-red-500 hover:text-red-700 text-lg"
-                                                title="Remove shade"
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            <p className="text-sm text-gray-600">Add color variations/shades for this product (e.g., different nail polish colors)</p>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                {editingProduct ? "Update Product" : "Add Product"}
-                            </button>
-                            {editingProduct && (
-                                <button type="button" onClick={handleCancelEdit} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
-                        {error && <div className="text-red-500 mt-2">{error}</div>}
-                    </form>
-                )}
-                <h2 className="text-xl text-black font-semibold mb-2">Products</h2>
-                {loading ? <div className="text-black">Loading...</div> : error ? <div className="text-red-500">{error}</div> : (
-                    <div>
-                        {products.length === 0 ? <div className="text-black">No products found.</div> : products.map(product => (
-                            <div key={product._id} className="border rounded p-4 mb-4 flex justify-between items-center">
-                                <div>
-                                    <div className="font-semibold text-black">{product.name}</div>
-                                    <div className="text-sm text-black">{product.category.charAt(0).toUpperCase() + product.category.slice(1)} | Stock: {product.stock}</div>
-                                    <div className="text-green-600 font-bold">Rs{product.price}</div>
-                                    <div className="text-xs text-black">{product.description?.slice(0, 60)}...</div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <button onClick={() => handleEditProduct(product)} className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
-                                    <button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Delete</button>
-                                    {/* Show all product images */}
-                                    <div className="flex space-x-1">
-                                        {product.images && product.images.length > 0 ? (
-                                            product.images.map((image, index) => (
-                                                <div key={index} className="relative">
-                                                    <Image 
-                                                        src={image.url} 
-                                                        alt={`${product.name} ${index + 1}`} 
-                                                        width={48}
-                                                        height={48}
-                                                        className="w-12 h-12 object-cover rounded border"
-                                                    />
-                                                    {index === 0 && (
-                                                        <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                                                            M
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs">
-                                                No Img
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        
-                        {/* Loading More Indicator */}
-                        {loadingMore && (
-                            <div className="flex justify-center items-center py-6">
-                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-                                <span className="ml-3 text-black">Loading more products...</span>
-                            </div>
-                        )}
-                        
-                        {/* No More Products Message */}
-                        {!hasMore && products.length > 0 && (
-                            <div className="text-center py-6 text-black">
-                                All products loaded.
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+  return (
+    <Card className="p-5">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-gray-500">Sales</p>
+          <p className="text-2xl font-bold">{formatRs(day ? day.revenue : total.revenue)}</p>
+          <p className="text-sm text-gray-500">
+            {day ? `${dayLabel(day.date)} · ${day.orders} order${day.orders === 1 ? '' : 's'}` : `Last ${range} days · ${total.orders} orders`}
+          </p>
         </div>
+        <div className="flex rounded-xl bg-gray-100 p-1 text-sm font-semibold">
+          {[7, 14, 30].map((r) => (
+            <button
+              key={r}
+              onClick={() => { setRange(r); setHover(null); }}
+              className={`rounded-lg px-3 py-1 ${range === r ? 'bg-white text-pink-700 shadow-sm' : 'text-gray-500'}`}
+            >
+              {r}d
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex h-44 items-end gap-1 border-b border-gray-200" onMouseLeave={() => setHover(null)}>
+        {data.map((d, i) => (
+          <button
+            key={d.date}
+            type="button"
+            aria-label={`${dayLabel(d.date)}: ${formatRs(d.revenue)}, ${d.orders} orders`}
+            onMouseEnter={() => setHover(i)}
+            onFocus={() => setHover(i)}
+            onBlur={() => setHover(null)}
+            className="group flex h-full flex-1 items-end"
+          >
+            <span
+              className={`block w-full rounded-t-md transition-colors ${d.revenue ? (i === data.length - 1 ? 'bg-pink-600' : 'bg-pink-300') + ' group-hover:bg-pink-600' : 'bg-gray-200'}`}
+              style={{ height: d.revenue ? `${Math.max(4, (d.revenue / max) * 100)}%` : '2px' }}
+            />
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex justify-between text-xs text-gray-400">
+        <span>{dayLabel(data[0].date)}</span>
+        <span>Today</span>
+      </div>
+    </Card>
+  );
+}
+
+function Tile({ label, revenue, orders, note }) {
+  return (
+    <Card className="p-5">
+      <p className="text-sm font-semibold text-gray-500">{label}</p>
+      <p className="mt-1 text-2xl font-bold tracking-tight">{formatRs(revenue)}</p>
+      <p className="mt-0.5 text-sm text-gray-500">{note || `${orders} order${orders === 1 ? '' : 's'}`}</p>
+    </Card>
+  );
+}
+
+function Attention({ href, icon: Icon, tone, title, detail, show = true }) {
+  if (!show) return null;
+  return (
+    <Link href={href} className={`group flex items-center gap-4 rounded-2xl border p-4 transition hover:shadow-md ${tone}`}>
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/70 text-xl"><Icon /></div>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold">{title}</p>
+        <p className="truncate text-sm opacity-80">{detail}</p>
+      </div>
+      <FiArrowRight className="shrink-0 transition group-hover:translate-x-1" />
+    </Link>
+  );
+}
+
+export default function Dashboard() {
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      setStats((await adminAPI.stats()).data);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const refresh = (
+    <button onClick={load} disabled={loading} className={ghostBtn}>
+      <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+    </button>
+  );
+
+  if (!stats) {
+    return (
+      <>
+        <PageHeader title="Dashboard" subtitle="How the store is doing">{refresh}</PageHeader>
+        <ErrorBanner message={error} onRetry={load} />
+        {!error && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28" />)}</div>
+            <Skeleton className="h-72" />
+          </div>
+        )}
+      </>
     );
+  }
+
+  const { today, week, month, lifetime } = stats;
+  const { abandonedCarts: carts, anonymousCarts: anon } = stats;
+  const needsAttention = stats.pendingOrders > 0 || carts.count > 0 || anon.count > 0 || stats.lowStock.length > 0;
+
+  return (
+    <>
+      <PageHeader title="Dashboard" subtitle={new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}>
+        {refresh}
+        <Link href="/admin/products?new=1" className={primaryBtn}><FiPlus /> Add product</Link>
+      </PageHeader>
+      <ErrorBanner message={error} onRetry={load} />
+
+      {needsAttention && (
+        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <Attention
+            show={stats.pendingOrders > 0}
+            href="/admin/orders?status=pending"
+            icon={FiClock}
+            tone="border-amber-200 bg-amber-50 text-amber-900"
+            title={`${stats.pendingOrders} pending order${stats.pendingOrders === 1 ? '' : 's'}`}
+            detail="Waiting for you to confirm"
+          />
+          <Attention
+            show={carts.count > 0 || anon.count > 0}
+            href="/admin/carts"
+            icon={FiShoppingCart}
+            tone="border-green-200 bg-green-50 text-green-900"
+            title={`${carts.count + anon.count} abandoned cart${carts.count + anon.count === 1 ? '' : 's'}`}
+            detail={[
+              carts.count > 0 && `${formatRs(carts.value)} to message on WhatsApp`,
+              anon.count > 0 && `${anon.count} without a number`
+            ].filter(Boolean).join(' · ')}
+          />
+          <Attention
+            show={stats.lowStock.length > 0}
+            href="/admin/products?stock=low"
+            icon={FiAlertTriangle}
+            tone="border-red-200 bg-red-50 text-red-900"
+            title={`${stats.lowStock.length} low on stock`}
+            detail={`${stats.lowStock[0]?.name}${stats.lowStock.length > 1 ? ' and more' : ''}`}
+          />
+        </div>
+      )}
+
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Tile label="Today" revenue={today.revenue} orders={today.orders} />
+        <Tile label="Last 7 days" revenue={week.revenue} orders={week.orders} />
+        <Tile label="Last 30 days" revenue={month.revenue} orders={month.orders} />
+        <Tile label="All time" revenue={lifetime.revenue} note={`${lifetime.orders} orders · ${stats.customerCount} customers`} />
+      </div>
+
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2"><RevenueChart days={stats.days} /></div>
+        <Card className="p-5">
+          <p className="mb-3 text-sm font-semibold text-gray-500">Best sellers · 30 days</p>
+          {stats.topProducts.length === 0 ? (
+            <p className="py-8 text-center text-sm text-gray-400">No sales yet</p>
+          ) : (
+            <ol className="space-y-3">
+              {stats.topProducts.map((p, i) => (
+                <li key={p._id} className="flex items-center gap-3">
+                  <span className="w-4 text-sm font-bold text-gray-400">{i + 1}</span>
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    {p.image && <Image src={p.image} alt="" width={40} height={40} className="h-full w-full object-cover" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-gray-500">{p.quantity} sold · {formatRs(p.revenue)}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+            <p className="font-bold">Recent orders</p>
+            <Link href="/admin/orders" className="text-sm font-semibold text-pink-600 hover:underline">View all</Link>
+          </div>
+          {stats.recentOrders.length === 0 ? (
+            <p className="py-10 text-center text-sm text-gray-400">No orders yet</p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {stats.recentOrders.map((o) => (
+                <li key={o._id}>
+                  <Link href={`/admin/orders?q=${encodeURIComponent(o.orderNumber)}`} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{o.customerInfo?.firstName} {o.customerInfo?.lastName}</p>
+                      <p className="text-xs text-gray-500">{o.orderNumber} · {timeAgo(o.createdAt)}</p>
+                    </div>
+                    <StatusBadge status={o.status} />
+                    <p className="w-24 text-right text-sm font-bold">{formatRs(o.total)}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+            <p className="font-bold">Low stock</p>
+            <p className="text-xs text-gray-400">{stats.lowStockLimit} or fewer</p>
+          </div>
+          {stats.lowStock.length === 0 ? (
+            <p className="py-10 text-center text-sm text-gray-400">Everything is well stocked 🎉</p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {stats.lowStock.map((p) => (
+                <li key={p._id} className="flex items-center gap-3 px-5 py-3">
+                  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    {p.images?.[0] && <Image src={p.images[0].url} alt="" width={36} height={36} className="h-full w-full object-cover" />}
+                  </div>
+                  <p className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}</p>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${p.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
+                    {p.stock === 0 ? 'Sold out' : `${p.stock} left`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+    </>
+  );
 }

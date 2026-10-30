@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/store/CartContext';
-import { productAPI, orderAPI } from '@/lib/api';
+import { productAPI, orderAPI, cartAPI } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
+import { getCid } from '@/lib/visitor';
 
 const CheckoutContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, phone: savedPhone, setPhone: savePhone } = useCart();
   
   const [checkoutItems, setCheckoutItems] = useState([]);
+  const orderPlaced = useRef(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +38,8 @@ const CheckoutContent = () => {
   // Initialize checkout items
   useEffect(() => {
     const initializeCheckout = async () => {
+      // clearCart() after a successful order re-runs this effect: don't bounce the shopper home.
+      if (orderPlaced.current) return;
       try {
         const productId = searchParams.get('product');
         const quantity = parseInt(searchParams.get('quantity')) || 1;
@@ -101,6 +105,31 @@ const CheckoutContent = () => {
     initializeCheckout();
   }, [searchParams, cart.items, router]);
 
+  // A number left on the cart page (or from a past order) pre-fills the form.
+  useEffect(() => {
+    if (savedPhone) setFormData(f => (f.phone ? f : { ...f, phone: savedPhone }));
+  }, [savedPhone]);
+
+  // Once a valid phone number is typed, save the cart so the store owner can follow up on WhatsApp
+  // if the order is never placed. Debounced; stops for good once the order goes through.
+  useEffect(() => {
+    if (orderPlaced.current || checkoutItems.length === 0 || formData.phone.replace(/\D/g, '').length < 10) return;
+    const timer = setTimeout(() => {
+      if (orderPlaced.current) return;
+      cartAPI.save({
+        cid: getCid(),
+        phone: formData.phone,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        items: checkoutItems.map(item => ({
+          product: item._id,
+          quantity: item.quantity,
+          selectedShade: item.selectedShade
+        }))
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [formData.phone, formData.firstName, formData.lastName, checkoutItems]);
+
   const calculateTotals = () => {
     const subtotal = checkoutItems.reduce((total, item) => {
       return total + (item.price * item.quantity);
@@ -123,6 +152,7 @@ const CheckoutContent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    orderPlaced.current = true; // stop cart capture while the order is in flight
 
     try {
       const { subtotal, shipping, tax, total } = calculateTotals();
@@ -165,8 +195,6 @@ const CheckoutContent = () => {
         notes: formData.notes
       };
 
-      console.log('Creating order with data:', JSON.stringify(orderData, null, 2));
-
       // Create order in database
       const response = await orderAPI.create(orderData);
       
@@ -176,17 +204,18 @@ const CheckoutContent = () => {
           clearCart();
         }
         
-        // Show success alert
-        alert(`✅ Order placed successfully!\n\nOrder Number: ${response.data.orderNumber}\n\nYou will be redirected to order confirmation page.`);
-        
-        // Redirect to order confirmation page with order ID
-        router.push(`/order-confirmation?orderId=${response.data._id}`);
+        // Next orders and carts from this device are tied to this number
+        savePhone(formData.phone);
+
+        // The token is what lets the confirmation page read this order
+        router.push(`/order-confirmation?orderId=${response.data._id}&token=${response.data.accessToken}`);
       } else {
         throw new Error('Failed to create order');
       }
       
     } catch (error) {
       console.error('Error processing order:', error);
+      orderPlaced.current = false;
       alert(error.message || 'Error processing order. Please try again.');
     } finally {
       setSubmitting(false);
@@ -282,8 +311,11 @@ const CheckoutContent = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="+92XXXXXXXXXX"
+                      autoComplete="tel"
+                      inputMode="tel"
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
                     />
+                    <p className="mt-1 text-xs text-gray-500">We may message you on WhatsApp about your order or cart.</p>
                   </div>
                 </div>
               </div>

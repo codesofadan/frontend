@@ -15,16 +15,17 @@ const OrderConfirmationContent = () => {
 
   useEffect(() => {
     const orderId = searchParams.get('orderId');
-    if (orderId) {
-      fetchOrder(orderId);
+    const token = searchParams.get('token');
+    if (orderId && token) {
+      fetchOrder(orderId, token);
     } else {
       setLoading(false);
     }
   }, [searchParams]);
 
-  const fetchOrder = async (orderId) => {
+  const fetchOrder = async (orderId, token) => {
     try {
-      const response = await orderAPI.getById(orderId);
+      const response = await orderAPI.getById(orderId, token);
       if (response.success) {
         setOrder(response.data);
       }

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const CartPage = () => {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity, phone, setPhone } = useCart();
 
   const handleQuantityChange = (itemIndex, newQuantity) => {
     if (newQuantity <= 0) {
@@ -201,6 +201,24 @@ const CartPage = () => {
                     Rs{(cart.total + 250 + (cart.total * 0.02)).toFixed(2)}
                   </span>
                 </div>
+              </div>
+
+              {/* Optional number: lets us save the cart and follow up on WhatsApp */}
+              <div className="mb-4">
+                <label htmlFor="cart-phone" className="block text-sm font-semibold text-gray-700 mb-1">
+                  WhatsApp number <span className="font-normal text-gray-400">(optional)</span>
+                </label>
+                <input
+                  id="cart-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="03XX XXXXXXX"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent hover:border-pink-300 transition-colors text-black placeholder-gray-400"
+                />
+                <p className="mt-1 text-xs text-gray-500">We&apos;ll keep your cart safe and may message you on WhatsApp about it.</p>
               </div>
 
               {/* Checkout Button */}
